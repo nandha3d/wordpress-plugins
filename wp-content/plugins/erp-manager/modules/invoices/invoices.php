@@ -484,6 +484,17 @@ public function enqueue_scripts($hook) {
             return;
         }
         
+        // Ensure access_token exists - generate if missing
+        if (empty($invoice->access_token)) {
+            $token = wp_generate_password(32, false);
+            $wpdb->update(
+                $this->table_invoices,
+                ['access_token' => $token],
+                ['id' => $invoice_id]
+            );
+            $invoice->access_token = $token;
+        }
+        
         $items = $wpdb->get_results($wpdb->prepare(
             "SELECT * FROM {$this->table_invoice_items} 
              WHERE invoice_id = %d 
