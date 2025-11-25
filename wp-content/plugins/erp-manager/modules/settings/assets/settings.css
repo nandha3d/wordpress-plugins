@@ -1,0 +1,248 @@
+/**
+ * FERP Settings Module - CSS
+ * File: modules/settings/assets/settings.css
+ */
+
+.ferp-settings-wrap {
+    max-width: 1200px;
+    margin: 20px 0;
+}
+
+.ferp-settings-container {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    margin-top: 20px;
+}
+
+.ferp-settings-section {
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.ferp-settings-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.ferp-settings-section h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #667eea;
+    color: #23282d;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Logo Upload Styles */
+.ferp-logo-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ferp-logo-preview {
+    width: 300px;
+    height: 100px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    overflow: hidden;
+}
+
+.ferp-logo-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.ferp-logo-placeholder {
+    text-align: center;
+    color: #999;
+}
+
+.ferp-logo-placeholder .dashicons {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.5;
+}
+
+.ferp-logo-placeholder p {
+    margin: 10px 0 0 0;
+    font-size: 13px;
+}
+
+.ferp-logo-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* QR Code Upload Styles */
+.ferp-qr-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ferp-qr-preview {
+    width: 200px;
+    height: 200px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.ferp-qr-preview img {
+    max-width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+}
+
+.ferp-qr-preview p {
+    margin: 10px 0 0 0;
+    font-size: 11px;
+    text-align: center;
+    color: #666;
+}
+
+.ferp-qr-placeholder {
+    text-align: center;
+    color: #999;
+}
+
+.ferp-qr-placeholder .dashicons {
+    font-size: 60px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.5;
+}
+
+.ferp-qr-placeholder p {
+    margin: 10px 0 0 0;
+    font-size: 13px;
+}
+
+.ferp-qr-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Form Styles */
+.ferp-settings-wrap .form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+    vertical-align: top;
+}
+
+.ferp-settings-wrap .form-table td {
+    padding: 15px 10px;
+}
+
+.ferp-settings-wrap .regular-text {
+    width: 100%;
+    max-width: 500px;
+}
+
+.ferp-settings-wrap .large-text {
+    width: 100%;
+    max-width: 600px;
+}
+
+.ferp-settings-wrap .small-text {
+    width: 100px;
+}
+
+.ferp-settings-wrap textarea {
+    resize: vertical;
+}
+
+.ferp-settings-wrap .description {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #666;
+}
+
+/* Submit Button */
+.ferp-settings-wrap .submit {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+}
+
+#save-settings-btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    height: auto;
+}
+
+#save-settings-btn .dashicons {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* Loading State */
+#save-settings-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Success/Error Messages */
+.ferp-settings-notice {
+    position: fixed;
+    top: 32px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .ferp-settings-wrap .form-table th,
+    .ferp-settings-wrap .form-table td {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    .ferp-settings-wrap .regular-text,
+    .ferp-settings-wrap .large-text {
+        max-width: 100%;
+    }
+    
+    .ferp-logo-buttons,
+    .ferp-qr-buttons {
+        flex-direction: column;
+    }
+    
+    .ferp-logo-buttons .button,
+    .ferp-qr-buttons .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
