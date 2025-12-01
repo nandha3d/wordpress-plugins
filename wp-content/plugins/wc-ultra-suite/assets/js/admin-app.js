@@ -14,17 +14,29 @@
          */
         init() {
             this.bindEvents();
-            this.loadView('dashboard');
+            const initialView = wcUltraSuite.initialView || 'dashboard';
+            this.switchView(initialView);
         },
 
+        /**
+         * Bind event listeners
+         */
         /**
          * Bind event listeners
          */
         bindEvents() {
             // Navigation clicks
             $('.nav-item').on('click', (e) => {
+                e.stopPropagation(); // Prevent bubbling
                 const view = $(e.currentTarget).data('view');
-                this.switchView(view);
+                if (view) {
+                    this.switchView(view);
+                }
+            });
+
+            // Navigation Group Toggles
+            $('.nav-item-header').on('click', function () {
+                $(this).parent('.nav-group').toggleClass('active');
             });
         },
 
@@ -33,7 +45,20 @@
          */
         switchView(view) {
             $('.nav-item').removeClass('active');
-            $(`.nav-item[data-view="${view}"]`).addClass('active');
+            const $item = $(`.nav-item[data-view="${view}"]`);
+            $item.addClass('active');
+
+            // Handle Navigation Groups
+            const $parentGroup = $item.closest('.nav-group');
+            if ($parentGroup.length) {
+                // If item is in a group, ensure group is open
+                $('.nav-group').not($parentGroup).removeClass('active');
+                $parentGroup.addClass('active');
+            } else {
+                // If top-level item, close all groups
+                $('.nav-group').removeClass('active');
+            }
+
             this.currentView = view;
             this.loadView(view);
         },
@@ -825,6 +850,40 @@
                             </button>
                         </div>
                     </div>
+                    
+                    <!-- White Label Settings -->
+                    <div class="settings-section" style="margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                        <h3 style="margin-bottom: 1.5rem;">White Label Settings</h3>
+                        
+                        <div class="setting-item">
+                            <label>Enable White Label</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableWhiteLabel" ${settings.white_label_enabled ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item" id="whiteLabelNameGroup" style="display: ${settings.white_label_enabled ? 'block' : 'none'}; margin-top: 1rem;">
+                            <label>Plugin Name</label>
+                            <input type="text" class="setting-input" id="whiteLabelName" value="${settings.white_label_name || 'Ultra Suite'}">
+                            <p class="help-text" style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">This name will replace "Ultra Suite" in the admin menu.</p>
+                        </div>
+                        
+                        <div class="setting-item" style="margin-top: 1rem;">
+                            <label>Hide WooCommerce Menus</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hideWcMenus" ${settings.hide_wc_menus ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <p class="help-text" style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">Simplify the admin interface for your clients.</p>
+                        </div>
+                        
+                        <div class="settings-actions" style="margin-top: 1.5rem;">
+                            <button class="btn btn-primary" id="saveWhiteLabelSettings">
+                                💾 Save White Label Settings
+                            </button>
+                        </div>
+                    </div>
                 </div>
             `;
 
@@ -905,6 +964,45 @@
                     self.saveThemeColors();
                 }
             });
+
+            // White Label Events
+            $('#enableWhiteLabel').on('change', function () {
+                if ($(this).is(':checked')) {
+                    $('#whiteLabelNameGroup').slideDown();
+                } else {
+                    $('#whiteLabelNameGroup').slideUp();
+                }
+            });
+
+            $('#saveWhiteLabelSettings').on('click', function () {
+                const settings = {
+                    white_label_enabled: $('#enableWhiteLabel').is(':checked'),
+                    white_label_name: $('#whiteLabelName').val(),
+                    hide_wc_menus: $('#hideWcMenus').is(':checked')
+                };
+
+                $.ajax({
+                    url: wcUltraSuite.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'wc_ultra_suite_save_settings',
+                        nonce: wcUltraSuite.nonce,
+                        settings: settings
+                    },
+                    success: (response) => {
+                        if (response.success) {
+                            const $btn = $('#saveWhiteLabelSettings');
+                            const originalText = $btn.text();
+                            $btn.text('✓ Saved!').prop('disabled', true);
+
+                            setTimeout(() => {
+                                $btn.text(originalText).prop('disabled', false);
+                                location.reload(); // Reload to apply menu changes
+                            }, 1500);
+                        }
+                    }
+                });
+            });
         },
 
         updateColorPreviews() {
@@ -955,6 +1053,181 @@
                             $btn.text(originalText).prop('disabled', false);
                             // Reload page to apply new colors
                             location.reload();
+                        }, 1500);
+                    }
+                }
+            });
+        },
+
+        /**
+         * Load Product Page Customizer
+         */
+        loadProductPageCustomizer() {
+            $.ajax({
+                url: wcUltraSuite.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'wc_ultra_suite_get_product_page_settings',
+                    nonce: wcUltraSuite.nonce
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.renderProductPageCustomizer(response.data);
+                    }
+                }
+            });
+        },
+
+        renderProductPageCustomizer(settings) {
+            const html = `
+                <div class="customizer-view">
+                    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">
+                        🛍️ Product Page Customizer
+                    </h1>
+                    <div class="customizer-container">
+                        <div class="customizer-settings">
+                            <div class="settings-section">
+                                <h3>Layout & Style</h3>
+                                <div class="setting-item">
+                                    <label>Image Position</label>
+                                    <select class="setting-select" id="prodImagePosition">
+                                        <option value="left" ${settings.image_position === 'left' ? 'selected' : ''}>Left (Default)</option>
+                                        <option value="right" ${settings.image_position === 'right' ? 'selected' : ''}>Right</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Gallery Style</label>
+                                    <select class="setting-select" id="prodGalleryStyle">
+                                        <option value="thumbnails" ${settings.gallery_style === 'thumbnails' ? 'selected' : ''}>Thumbnails</option>
+                                        <option value="slider" ${settings.gallery_style === 'slider' ? 'selected' : ''}>Slider</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Add to Cart Button Style</label>
+                                    <select class="setting-select" id="prodButtonStyle">
+                                        <option value="default" ${settings.button_style === 'default' ? 'selected' : ''}>Default</option>
+                                        <option value="rounded" ${settings.button_style === 'rounded' ? 'selected' : ''}>Rounded</option>
+                                        <option value="square" ${settings.button_style === 'square' ? 'selected' : ''}>Square</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3>Visibility</h3>
+                                <div class="setting-item">
+                                    <label>Show Quantity Field</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="prodShowQuantity" ${settings.show_quantity ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Show SKU</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="prodShowSku" ${settings.show_sku ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Show Categories</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="prodShowCategories" ${settings.show_categories ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Show Tags</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="prodShowTags" ${settings.show_tags ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>Related Products</h3>
+                                <div class="setting-item">
+                                    <label>Show Related Products</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="prodShowRelated" ${settings.show_related ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Related Products Count</label>
+                                    <input type="number" class="setting-input" id="prodRelatedCount" value="${settings.related_count}" min="2" max="12">
+                                </div>
+                            </div>
+                            
+                            <div class="customizer-actions">
+                                <button class="btn btn-primary" id="saveProductPageSettings">💾 Save Changes</button>
+                                <button class="btn btn-secondary" id="resetProductPageSettings">🔄 Reset</button>
+                            </div>
+                        </div>
+                        <div class="customizer-preview">
+                            <div class="preview-header">
+                                <h3>Live Preview</h3>
+                                <span class="preview-badge">Frontend</span>
+                            </div>
+                            <div class="preview-frame" style="height: 600px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                ${wcUltraSuite.productUrl ?
+                    `<iframe src="${wcUltraSuite.productUrl}" style="width: 100%; height: 100%; border: none;"></iframe>` :
+                    `<div class="preview-placeholder"><p>No products found for preview</p></div>`
+                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('#wc-ultra-suite-content').html(html);
+
+            $('#saveProductPageSettings').on('click', () => {
+                this.saveProductPageSettings();
+            });
+
+            $('#resetProductPageSettings').on('click', () => {
+                if (confirm('Reset product page settings?')) {
+                    this.loadProductPageCustomizer();
+                }
+            });
+        },
+
+        saveProductPageSettings() {
+            const settings = {
+                image_position: $('#prodImagePosition').val(),
+                gallery_style: $('#prodGalleryStyle').val(),
+                button_style: $('#prodButtonStyle').val(),
+                show_quantity: $('#prodShowQuantity').is(':checked'),
+                show_sku: $('#prodShowSku').is(':checked'),
+                show_categories: $('#prodShowCategories').is(':checked'),
+                show_tags: $('#prodShowTags').is(':checked'),
+                show_related: $('#prodShowRelated').is(':checked'),
+                related_count: parseInt($('#prodRelatedCount').val())
+            };
+
+            $.ajax({
+                url: wcUltraSuite.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'wc_ultra_suite_save_product_page_settings',
+                    nonce: wcUltraSuite.nonce,
+                    settings: settings
+                },
+                success: (response) => {
+                    if (response.success) {
+                        const $btn = $('#saveProductPageSettings');
+                        const originalText = $btn.text();
+                        $btn.text('✓ Saved!').prop('disabled', true);
+
+                        // Reload iframe
+                        const $iframe = $('.customizer-preview iframe');
+                        if ($iframe.length) {
+                            $iframe.attr('src', $iframe.attr('src'));
+                        }
+
+                        setTimeout(() => {
+                            $btn.text(originalText).prop('disabled', false);
                         }, 1500);
                     }
                 }
@@ -1021,6 +1294,27 @@
                                     </select>
                                 </div>
                                 <div class="setting-item">
+                                    <label>Image Carousel</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="shopEnableCarousel" ${settings.enable_image_carousel ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Wishlist Button</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="shopEnableWishlist" ${settings.enable_wishlist ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Buy Now Button</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="shopEnableBuyNow" ${settings.enable_buy_now ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
                                     <label>Show Rating</label>
                                     <label class="toggle-switch">
                                         <input type="checkbox" id="shopShowRating" ${settings.show_rating ? 'checked' : ''}>
@@ -1042,6 +1336,63 @@
                                     </label>
                                 </div>
                             </div>
+
+                            <div class="settings-section">
+                                <h3>Advanced Filtering</h3>
+                                <div class="setting-item">
+                                    <label>Enable Filters</label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="shopEnableFilters" ${settings.enable_filters ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="filter-options" style="margin-left: 1rem; border-left: 2px solid #e2e8f0; padding-left: 1rem; display: ${settings.enable_filters ? 'block' : 'none'};">
+                                    <div class="setting-item">
+                                        <label>Filter Style</label>
+                                        <select class="setting-select" id="shopFilterStyle">
+                                            <option value="sidebar-cards" ${settings.filter_style === 'sidebar-cards' ? 'selected' : ''}>Sidebar Cards</option>
+                                            <option value="sidebar-list" ${settings.filter_style === 'sidebar-list' ? 'selected' : ''}>Sidebar List</option>
+                                        </select>
+                                    </div>
+                                    <div class="setting-item">
+                                        <label>Price Filter</label>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="shopEnablePriceFilter" ${settings.enable_price_filter ? 'checked' : ''}>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-item">
+                                        <label>Category Filter</label>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="shopEnableCategoryFilter" ${settings.enable_category_filter ? 'checked' : ''}>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-item">
+                                        <label>Attribute Filter</label>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="shopEnableAttributeFilter" ${settings.enable_attribute_filter ? 'checked' : ''}>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div id="filter-attributes-container" style="margin-top: 1rem; padding-left: 0.5rem; display: ${settings.enable_attribute_filter ? 'block' : 'none'};">
+                                        <p style="font-size: 0.9rem; color: #64748b;">Loading attributes...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>Custom Template</h3>
+                                <div class="setting-item">
+                                    <label>Enable Custom Shop Template</label>
+                                    <select class="setting-select" id="shopPaginationStyle">
+                                        <option value="numbers" ${settings.pagination_style === 'numbers' ? 'selected' : ''}>Numbers</option>
+                                        <option value="load-more" ${settings.pagination_style === 'load-more' ? 'selected' : ''}>Load More Button</option>
+                                        <option value="infinite" ${settings.pagination_style === 'infinite' ? 'selected' : ''}>Infinite Scroll</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
                             <div class="customizer-actions">
                                 <button class="btn btn-primary" id="saveShopPageSettings">💾 Save Changes</button>
                                 <button class="btn btn-secondary" id="resetShopPageSettings">🔄 Reset</button>
@@ -1052,12 +1403,8 @@
                                 <h3>Live Preview</h3>
                                 <span class="preview-badge">Frontend</span>
                             </div>
-                            <div class="preview-frame">
-                                <div class="preview-placeholder">
-                                    <div class="preview-icon">🏪</div>
-                                    <p>Shop page customization</p>
-                                    <small>Save to apply changes</small>
-                                </div>
+                            <div class="preview-frame" style="height: 600px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <iframe src="${wcUltraSuite.shopUrl}" style="width: 100%; height: 100%; border: none;"></iframe>
                             </div>
                         </div>
                     </div>
@@ -1070,6 +1417,14 @@
                 $('#gridSpacingValue').text($(this).val() + 'px');
             });
 
+            $('#shopEnableFilters').on('change', function () {
+                if ($(this).is(':checked')) {
+                    $('.filter-options').slideDown();
+                } else {
+                    $('.filter-options').slideUp();
+                }
+            });
+
             $('#saveShopPageSettings').on('click', () => {
                 this.saveShopPageSettings();
             });
@@ -1079,6 +1434,57 @@
                     this.loadShopPageCustomizer();
                 }
             });
+            // Toggle attribute container visibility
+            $('#shopEnableAttributeFilter').on('change', function () {
+                $('#filter-attributes-container').toggle($(this).is(':checked'));
+            });
+
+            // Fetch attributes
+            $.post(wcUltraSuite.ajaxUrl, {
+                action: 'wc_ultra_suite_get_attributes',
+                nonce: wcUltraSuite.nonce
+            }, (response) => {
+                if (response.success) {
+                    const attributes = response.data;
+                    const enabledFilters = settings.enabled_filters || [];
+
+                    if (attributes.length === 0) {
+                        $('#filter-attributes-container').html('<p style="font-size: 0.9rem; color: #64748b;">No global attributes found.</p>');
+                        return;
+                    }
+
+                    let attributeHtml = '<label style="display:block; margin-bottom:0.5rem; font-weight:600; font-size:0.9rem;">Select Attributes to Show:</label>';
+                    attributes.forEach(attr => {
+                        const isChecked = enabledFilters.includes(attr.name) ? 'checked' : '';
+                        attributeHtml += `
+                            <label class="checkbox-label" style="display:flex; align-items:center; margin-bottom:0.5rem; cursor:pointer;">
+                                <input type="checkbox" class="filter-attribute-checkbox" value="${attr.name}" ${isChecked} style="margin-right:0.5rem;">
+                                ${attr.label}
+                            </label>
+                        `;
+                    });
+
+                    $('#filter-attributes-container').html(attributeHtml);
+                }
+            });
+
+            // Generate Dummy Products
+            $('#generateDummyProducts').on('click', function () {
+                const $btn = $(this);
+                $btn.prop('disabled', true).text('Generating...');
+
+                $.post(wcUltraSuite.ajaxUrl, {
+                    action: 'wc_ultra_suite_generate_dummy_products',
+                    nonce: wcUltraSuite.nonce
+                }, (response) => {
+                    if (response.success) {
+                        alert(response.data.message);
+                    } else {
+                        alert('Error: ' + response.data.message);
+                    }
+                    $btn.prop('disabled', false).text('📦 Generate 10 Dummy Products');
+                });
+            });
         },
 
         saveShopPageSettings() {
@@ -1087,13 +1493,28 @@
                 products_per_page: parseInt($('#shopProductsPerPage').val()),
                 grid_spacing: parseInt($('#shopGridSpacing').val()),
                 card_style: $('#shopCardStyle').val(),
+                enable_image_carousel: $('#shopEnableCarousel').is(':checked'),
+                enable_wishlist: $('#shopEnableWishlist').is(':checked'),
+                enable_buy_now: $('#shopEnableBuyNow').is(':checked'),
                 show_rating: $('#shopShowRating').is(':checked'),
                 show_add_to_cart: $('#shopShowAddToCart').is(':checked'),
                 show_sale_badge: $('#shopShowSaleBadge').is(':checked'),
                 show_sorting: true,
                 show_result_count: true,
-                enable_filters: false,
-                pagination_style: 'numbers'
+                enable_filters: $('#shopEnableFilters').is(':checked'),
+                filter_style: $('#shopFilterStyle').val(),
+                enable_price_filter: $('#shopEnablePriceFilter').is(':checked'),
+                enable_category_filter: $('#shopEnableCategoryFilter').is(':checked'),
+                enable_attribute_filter: $('#shopEnableAttributeFilter').is(':checked'),
+                enabled_filters: (function () {
+                    const filters = [];
+                    $('.filter-attribute-checkbox:checked').each(function () {
+                        filters.push($(this).val());
+                    });
+                    return filters;
+                })(),
+                enable_custom_template: $('#shopEnableCustomTemplate').is(':checked'),
+                pagination_style: $('#shopPaginationStyle').val()
             };
 
             $.ajax({
@@ -1110,6 +1531,10 @@
                         const originalText = $btn.text();
                         $btn.text('✓ Saved!').prop('disabled', true);
 
+                        // Reload iframe
+                        const $iframe = $('.customizer-preview iframe');
+                        $iframe.attr('src', $iframe.attr('src'));
+
                         setTimeout(() => {
                             $btn.text(originalText).prop('disabled', false);
                             alert('Shop page settings saved! Visit your shop page to see changes.');
@@ -1125,7 +1550,7 @@
         formatCurrency(amount) {
             const symbol = wcUltraSuite.currencySymbol || '$';
             const formatted = parseFloat(amount).toFixed(2);
-            return `${symbol}${formatted}`;
+            return `${symbol}${formatted} `;
         },
 
         /**
@@ -1150,7 +1575,7 @@
             };
 
             const badgeClass = statusMap[status] || 'badge-info';
-            return `<span class="badge ${badgeClass}">${status}</span>`;
+            return `< span class="badge ${badgeClass}" > ${status}</span > `;
         }
     };
 

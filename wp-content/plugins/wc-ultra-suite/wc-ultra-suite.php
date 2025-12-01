@@ -178,21 +178,21 @@ class WC_Ultra_Suite {
      * Render Product Page Customizer
      */
     public function render_product_page_customizer() {
-        include WC_ULTRA_SUITE_PLUGIN_DIR . 'templates/customizer-product-page.php';
+        include WC_ULTRA_SUITE_PLUGIN_DIR . 'templates/dashboard.php';
     }
     
     /**
      * Render Shop Page Customizer
      */
     public function render_shop_page_customizer() {
-        include WC_ULTRA_SUITE_PLUGIN_DIR . 'templates/customizer-shop-page.php';
+        include WC_ULTRA_SUITE_PLUGIN_DIR . 'templates/dashboard.php';
     }
     
     /**
      * Render Settings page
      */
     public function render_settings() {
-        include WC_ULTRA_SUITE_PLUGIN_DIR . 'templates/settings.php';
+        include WC_ULTRA_SUITE_PLUGIN_DIR . 'templates/dashboard.php';
     }
     
     /**
@@ -241,13 +241,30 @@ class WC_Ultra_Suite {
             true
         );
         
+        // Determine initial view based on page slug
+        $current_screen = get_current_screen();
+        $initial_view = 'dashboard';
+        
+        if ($current_screen) {
+            if (strpos($current_screen->id, 'wc-ultra-suite-product-page') !== false) {
+                $initial_view = 'product-page';
+            } elseif (strpos($current_screen->id, 'wc-ultra-suite-shop-page') !== false) {
+                $initial_view = 'shop-page';
+            } elseif (strpos($current_screen->id, 'wc-ultra-suite-settings') !== false) {
+                $initial_view = 'settings';
+            }
+        }
+        
         // Localize script
         wp_localize_script('wc-ultra-suite-admin', 'wcUltraSuite', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wc_ultra_suite_nonce'),
             'pluginUrl' => WC_ULTRA_SUITE_PLUGIN_URL,
+            'shopUrl' => get_permalink(wc_get_page_id('shop')),
+            'productUrl' => ($latest_product = wc_get_products(['limit' => 1])) ? get_permalink($latest_product[0]->get_id()) : '',
             'currencySymbol' => get_woocommerce_currency_symbol(),
             'currencyPosition' => get_option('woocommerce_currency_pos'),
+            'initialView' => $initial_view,
             'i18n' => [
                 'loading' => __('Loading...', 'wc-ultra-suite'),
                 'error' => __('An error occurred', 'wc-ultra-suite'),

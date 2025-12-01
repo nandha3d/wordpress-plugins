@@ -51,7 +51,9 @@ class WC_Ultra_Suite_Core {
      * Save plugin settings
      */
     public function save_settings($settings) {
-        return update_option('wc_ultra_suite_settings', $settings);
+        $current = $this->get_settings();
+        $new_settings = wp_parse_args($settings, $current);
+        return update_option('wc_ultra_suite_settings', $new_settings);
     }
     
     /**
