@@ -1,0 +1,234 @@
+/**
+ * WC Ultra Suite - Frontend Styles
+ * Professional product addon styling
+ */
+
+:root {
+    --wc-ultra-primary: #6366f1;
+    --wc-ultra-primary-dark: #4f46e5;
+    --wc-ultra-success: #10b981;
+    --wc-ultra-border: #e2e8f0;
+    --wc-ultra-text: #1e293b;
+    --wc-ultra-text-muted: #64748b;
+    --wc-ultra-radius: 0.75rem;
+    --wc-ultra-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+   Product Addons Container
+   ======================================== */
+.wc-ultra-suite-addons {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 2px solid var(--wc-ultra-border);
+    border-radius: var(--wc-ultra-radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--wc-ultra-shadow);
+}
+
+.wc-ultra-suite-addons-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--wc-ultra-text);
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--wc-ultra-border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.wc-ultra-suite-addons-title::before {
+    content: '✨';
+    font-size: 1.75rem;
+}
+
+/* ========================================
+   Addon Fields
+   ======================================== */
+.wc-ultra-suite-addon-field {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    background: white;
+    border-radius: calc(var(--wc-ultra-radius) - 0.25rem);
+    border: 1px solid var(--wc-ultra-border);
+    transition: all 0.2s ease;
+}
+
+.wc-ultra-suite-addon-field:hover {
+    border-color: var(--wc-ultra-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.wc-ultra-suite-addon-field:last-child {
+    margin-bottom: 0;
+}
+
+/* ========================================
+   Labels
+   ======================================== */
+.addon-label {
+    display: block;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--wc-ultra-text);
+    margin-bottom: 0.75rem;
+}
+
+.addon-price {
+    color: var(--wc-ultra-success);
+    font-weight: 700;
+    margin-left: 0.5rem;
+    font-size: 0.95rem;
+}
+
+/* ========================================
+   Input Fields
+   ======================================== */
+.addon-text-input,
+.addon-textarea,
+.addon-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--wc-ultra-border);
+    border-radius: calc(var(--wc-ultra-radius) - 0.25rem);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.addon-text-input:focus,
+.addon-textarea:focus,
+.addon-select:focus {
+    outline: none;
+    border-color: var(--wc-ultra-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.addon-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ========================================
+   Checkboxes & Radio Buttons
+   ======================================== */
+.wc-ultra-suite-addon-field input[type="checkbox"],
+.wc-ultra-suite-addon-field input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: var(--wc-ultra-primary);
+}
+
+.addon-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 2px solid var(--wc-ultra-border);
+    border-radius: calc(var(--wc-ultra-radius) - 0.25rem);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.addon-radio-label:hover {
+    border-color: var(--wc-ultra-primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.addon-radio-label input[type="radio"]:checked {
+    accent-color: var(--wc-ultra-primary);
+}
+
+.addon-radio-label:has(input:checked) {
+    border-color: var(--wc-ultra-primary);
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* ========================================
+   Select Dropdown
+   ======================================== */
+.addon-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236366f1' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+/* ========================================
+   Required Field Indicator
+   ======================================== */
+.wc-ultra-suite-addon-field:has([required]) .addon-label::after {
+    content: '*';
+    color: #ef4444;
+    margin-left: 0.25rem;
+    font-weight: 700;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+@media (max-width: 768px) {
+    .wc-ultra-suite-addons {
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .wc-ultra-suite-addons-title {
+        font-size: 1.25rem;
+    }
+
+    .wc-ultra-suite-addon-field {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   Animation
+   ======================================== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wc-ultra-suite-addons {
+    animation: slideIn 0.3s ease;
+}
+
+.wc-ultra-suite-addon-field {
+    animation: slideIn 0.3s ease;
+    animation-fill-mode: both;
+}
+
+.wc-ultra-suite-addon-field:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.wc-ultra-suite-addon-field:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.wc-ultra-suite-addon-field:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.wc-ultra-suite-addon-field:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.wc-ultra-suite-addon-field:nth-child(5) {
+    animation-delay: 0.25s;
+}

@@ -106,11 +106,14 @@ class FERP_Invoices_Module {
             wp_die(__('Invoice not found.', 'ferp-modular'), 'Not Found', ['response' => 404]);
         }
         
-        // Verify token (timing-safe comparison)
-        if (empty($invoice->access_token) || !hash_equals($invoice->access_token, $token)) {
-            wp_die(__('Invalid access token. This invoice link may be expired or incorrect.', 'ferp-modular'), 
-                   'Access Denied', 
-                   ['response' => 403]);
+        // Skip token validation for logged-in administrators
+        if (!current_user_can('manage_options')) {
+            // Verify token for non-admin users (timing-safe comparison)
+            if (empty($invoice->access_token) || !hash_equals($invoice->access_token, $token)) {
+                wp_die(__('Invalid access token. This invoice link may be expired or incorrect.', 'ferp-modular'), 
+                       'Access Denied', 
+                       ['response' => 403]);
+            }
         }
         
         // Token is valid, display the invoice

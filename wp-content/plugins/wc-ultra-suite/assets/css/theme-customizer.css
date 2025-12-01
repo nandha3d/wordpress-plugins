@@ -1,0 +1,339 @@
+/* ========================================
+   Theme Customizer Styles
+   ======================================== */
+
+/* Theme Presets */
+.theme-presets-container {
+    margin-bottom: 3rem;
+}
+
+.theme-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.preset-card {
+    background: white;
+    border: 3px solid transparent;
+    border-radius: var(--wc-ultra-radius-lg);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--wc-ultra-shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.preset-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.preset-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--wc-ultra-shadow-xl);
+}
+
+.preset-card:hover::before {
+    opacity: 1;
+}
+
+.preset-card.active {
+    border-color: var(--wc-ultra-primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), var(--wc-ultra-shadow-xl);
+    transform: scale(1.02);
+}
+
+.preset-colors {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+}
+
+.preset-colors span {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+
+.preset-card:hover .preset-colors span {
+    transform: scale(1.1);
+}
+
+.preset-name {
+    display: block;
+    text-align: center;
+    font-weight: 600;
+    color: var(--wc-ultra-text);
+    font-size: var(--wc-ultra-font-size-sm);
+}
+
+/* Color Customizer */
+.color-customizer {
+    background: white;
+    border-radius: var(--wc-ultra-radius-xl);
+    padding: 2rem;
+    box-shadow: var(--wc-ultra-shadow-md);
+}
+
+.color-pickers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.color-picker-card {
+    background: var(--wc-ultra-bg);
+    border-radius: var(--wc-ultra-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--wc-ultra-shadow-sm);
+    transition: all 0.3s;
+}
+
+.color-picker-card:hover {
+    box-shadow: var(--wc-ultra-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.color-preview {
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.color-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.color-info {
+    padding: 1.5rem;
+}
+
+.color-info label {
+    display: block;
+    font-weight: 700;
+    font-size: var(--wc-ultra-font-size-lg);
+    color: var(--wc-ultra-text);
+    margin-bottom: 1rem;
+}
+
+.color-input-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.color-input {
+    width: 60px;
+    height: 44px;
+    border: 2px solid var(--wc-ultra-border);
+    border-radius: var(--wc-ultra-radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.color-input:hover {
+    border-color: var(--wc-ultra-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.color-text {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--wc-ultra-border);
+    border-radius: var(--wc-ultra-radius-md);
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: var(--wc-ultra-font-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.color-text:focus {
+    outline: none;
+    border-color: var(--wc-ultra-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.color-description {
+    font-size: var(--wc-ultra-font-size-sm);
+    color: var(--wc-ultra-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Live Preview Section */
+.live-preview-section {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: var(--wc-ultra-bg);
+    border-radius: var(--wc-ultra-radius-lg);
+    border: 2px dashed var(--wc-ultra-border);
+}
+
+.preview-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.preview-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--wc-ultra-radius-md);
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: var(--wc-ultra-shadow-md);
+}
+
+.preview-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--wc-ultra-shadow-lg);
+}
+
+.preview-primary {
+    background: linear-gradient(135deg, var(--wc-ultra-primary), var(--wc-ultra-secondary));
+}
+
+.preview-secondary {
+    background: white;
+    color: var(--wc-ultra-text);
+    border: 2px solid var(--wc-ultra-border);
+}
+
+.preview-badge {
+    padding: 0.5rem 1rem;
+    border-radius: var(--wc-ultra-radius-full);
+    background: var(--wc-ultra-success);
+    color: white;
+    font-size: var(--wc-ultra-font-size-sm);
+    font-weight: 600;
+    box-shadow: var(--wc-ultra-shadow-sm);
+}
+
+.preview-card {
+    background: white;
+    border-radius: var(--wc-ultra-radius-md);
+    overflow: hidden;
+    box-shadow: var(--wc-ultra-shadow-md);
+    width: 200px;
+}
+
+.preview-card-header {
+    height: 60px;
+    background: linear-gradient(90deg, var(--wc-ultra-primary), var(--wc-ultra-secondary));
+}
+
+.preview-card-body {
+    padding: 1rem;
+}
+
+.preview-text {
+    font-weight: 600;
+    color: var(--wc-ultra-text);
+}
+
+/* Settings Actions */
+.settings-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--wc-ultra-border);
+}
+
+.settings-actions .btn {
+    padding: 1rem 2rem;
+    font-size: var(--wc-ultra-font-size-base);
+}
+
+/* Animations */
+@keyframes colorPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.color-preview:hover {
+    animation: colorPulse 1s ease-in-out infinite;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.color-picker-card {
+    animation: slideInUp 0.4s ease-out;
+    animation-fill-mode: both;
+}
+
+.color-picker-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.color-picker-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.color-picker-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.preset-card {
+    animation: slideInUp 0.3s ease-out;
+    animation-fill-mode: both;
+}
+
+.preset-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.preset-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.preset-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.preset-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.preset-card:nth-child(5) {
+    animation-delay: 0.25s;
+}
